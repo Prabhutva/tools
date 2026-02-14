@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>FD Calculator – Break & Reinvest</title>
+    <style>
+        body {
+            font-family: system-ui, sans-serif;
+            max-width: 760px;
+            margin: auto;
+            padding: 20px;
+        }
+        input {
+            width: 100%;
+            padding: 6px;
+            margin-top: 4px;
+        }
+        label {
+            margin-top: 12px;
+            display: block;
+            font-weight: 600;
+        }
+        button {
+            margin-top: 16px;
+            padding: 10px;
+            width: 100%;
+            font-size: 16px;
+        }
+        .result {
+            margin-top: 20px;
+            background: #f4f4f4;
+            padding: 15px;
+        }
+        .profit {
+            color: green;
+            font-weight: bold;
+        }
+        .loss {
+            color: red;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+<h2>Fixed Deposit Calculator (Annual Compounding)</h2>
+
+<label>Principal Amount (₹)</label>
+<input type="number" id="principal">
+
+<label>Original Interest Rate (decimal)</label>
+<input type="number" step="0.0001" id="rate">
+
+<label>FD Start Date</label>
+<input type="date" id="startDate">
+
+<label>FD End Date</label>
+<input type="date" id="endDate">
+
+<label>Break FD On</label>
+<input type="date" id="breakDate">
+
+<label>Re-investment Interest Rate (decimal)</label>
+<input type="number" step="0.0001" id="reinvestRate">
+
+<button onclick="calculate()">Calculate</button>
+
+<div class="result" id="output"></div>
+
+<script>
+function daysBetween(d1, d2) {
+    return Math.floor((d2 - d1) / (1000 * 60 * 60 * 24));
+}
+
+function compound(P, r, days) {
+    return P * Math.pow(1 + r, days / 365);
+}
+
+function calculate() {
+    const P = parseFloat(principal.value);
+    const r = parseFloat(rate.value);
+    const rNew = parseFloat(reinvestRate.value);
+    const start = new Date(startDate.value);
+    const end = new Date(endDate.value);
+    const breakD = new Date(breakDate.value);
+
+    let output = "";
+
+    if (!P || !r || !rNew || !start || !end || !breakD) {
+        output = "Please fill all fields.";
+        outputDiv.innerHTML = output;
+        return;
+    }
+
+    const totalDays = daysBetween(start, end);
+    const elapsedDays = daysBetween(start, breakD);
+    const remainingDays = daysBetween(breakD, end);
+
+    if (elapsedDays <= 0 || remainingDays <= 0) {
+        output = "Invalid break date.";
+        outputDiv.innerHTML = output;
+        return;
+    }
+
+    // Original FD
+    const originalMaturity = compound(P, r, totalDays);
+
+    // Break FD with penalty
+    const penalizedRate = Math.max(r - 0.01, 0);
+    const breakAmount = compound(P, penalizedRate, elapsedDays);
+
+    // Reinvest
+    const reinvestedMaturity = compound(breakAmount, rNew, remainingDays);
+
+    const diff = reinvestedMaturity - originalMaturity;
+
+    output += `<b>Original FD</b><br>`;
+    output += `Maturity Amount: ₹${originalMaturity.toFixed(2)}<br><br>`;
+
+    output += `<b>Break & Re-invest</b><br>`;
+    output += `Amount on Break Date: ₹${breakAmount.toFixed(2)}<br>`;
+    output += `Re-invested Maturity: ₹${reinvestedMaturity.toFixed(2)}<br><br>`;
+
+    if (diff > 0) {
+        output += `<span class="profit">✔ Breaking FD is PROFITABLE</span><br>`;
+        output += `Extra Gain: ₹${diff.toFixed(2)}`;
+    } else {
+        output += `<span class="loss">✖ Breaking FD is NOT profitable</span><br>`;
+        output += `Loss Compared to Original: ₹${Math.abs(diff).toFixed(2)}`;
+    }
+
+    document.getElementById("output").innerHTML = output;
+}
+
+const outputDiv = document.getElementById("output");
+</script>
+
+</body>
+</html>
+
