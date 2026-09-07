@@ -1,12 +1,47 @@
 <!doctype html>
 <html lang="en">
     <head>
-        <link rel="stylesheet" href="style.css">
-        <link rel="icon" href="favicon.ico" type="image/x-icon">
+        <link rel="stylesheet" href="style.css" />
+        <link rel="icon" href="favicon.ico" type="image/x-icon" />
         <meta charset="UTF-8" />
         <title>&#65279;</title>
     </head>
     <body>
-        
+        <script>
+            function removeBackgroundColor() {
+                document.body.style.removeProperty("background-color");
+            }
+            function isValidCSSColor(hash) {
+                var colorName = hash.substring(1);
+                var colorCheck = new Option().style;
+                colorCheck.color = colorName;
+                return colorCheck.color !== "";
+            }
+            function setBackgroundUsingHash() {
+                let hash = window.location.hash.replace(/%20/g, " ");
+                if (hash) {
+                    if (
+                        [9, 7, 5, 4].includes(hash.length) &&
+                        /^#[0-9A-F]+$/i.test(hash)
+                    ) {
+                        document.body.style.setProperty(
+                            "background-color",
+                            hash,
+                        );
+                    } else if (isValidCSSColor(hash)) {
+                        document.body.style.setProperty(
+                            "background-color",
+                            hash.substring(1),
+                        );
+                    } else removeBackgroundColor();
+                } else removeBackgroundColor();
+            }
+
+            window.addEventListener("hashchange", (event) => {
+                setBackgroundUsingHash();
+            });
+
+            setBackgroundUsingHash();
+        </script>
     </body>
 </html>
