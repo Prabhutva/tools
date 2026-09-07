@@ -1,0 +1,19 @@
+html {
+    pointer-events: none;
+    overscroll-behavior: none;
+}
+
+body {
+    background: #ffffff;
+    width: 100vw;
+    height: 100vh;
+    margin: 0;
+    overflow: none;
+}
+
+/* Detected System Dark Mode */
+@media (prefers-color-scheme: dark) {
+    body {
+        background: #000000;
+    }
+}

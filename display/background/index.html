@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <link rel="stylesheet" href="style.css" />
+        <link rel="icon" href="favicon.ico" type="image/x-icon" />
+        <meta charset="UTF-8" />
+        <title>&#65279;</title>
+    </head>
+    <body>
+        <script>
+            function resetBackground() {
+                document.body.style.removeProperty("background");
+            }
+            function isValidCSSBackground(hash) {
+                var bgCheck = new Option().style;
+                bgCheck.background = hash;
+                return bgCheck.background !== "";
+            }
+            function setBackgroundUsingHash() {
+                let hash = window.location.hash.slice(1).replace(/%20/g, " ");
+                if (hash) {
+                    if (
+                        [8, 6, 4, 3].includes(hash.length) &&
+                        /^[0-9A-F]+$/i.test(hash)
+                    ) {
+                        document.body.style.setProperty(
+                            "background",
+                            `#${hash}`,
+                        );
+                    } else if (isValidCSSBackground(hash)) {
+                        document.body.style.setProperty(
+                            "background",
+                            hash,
+                        );
+                    } else resetBackground();
+                } else resetBackground();
+            }
+
+            window.addEventListener("hashchange", (event) => {
+                setBackgroundUsingHash();
+            });
+
+            setBackgroundUsingHash();
+        </script>
+    </body>
+</html>
